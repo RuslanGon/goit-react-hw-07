@@ -1,39 +1,11 @@
-import axios from "axios";
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { createSelector } from "@reduxjs/toolkit";
 
-axios.defaults.baseURL = "https://661d3da998427bbbef013b97.mockapi.io";
+export const selectContacts = state => state.contacts.items;
+export const selectLoading = state => state.contacts.loading;
+export const selectError = state => state.contacts.error;
+export const selectNameFilter = state => state.filters.name;
 
-export const fetchContacts = createAsyncThunk("contacts/fetchAll",
-    async (_, thunkAPI) => {
-    try {
-        const response = await axios.get('/contacts');
-        return response.data;
-    }
-    catch (error) {
-        return thunkAPI.rejectWithValue(error.message);
-    }
-});
-
-export const addContact = createAsyncThunk(
-  'contacts/addContact',
-  async (finalContact, thunkAPI) => {
-    try {
-      const response = await axios.post('/contacts',  finalContact );
-        return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
-    }
-  }
-);
-
-export const deleteContact = createAsyncThunk(
-  'contacts/deleteContact',
-  async (contactId, thunkAPI) => {
-    try {
-        const response = await axios.delete(`/contacts/${contactId}`);
-        return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
-    }
-  }
-);
+export const selectFilteredContacts = createSelector([selectContacts, selectNameFilter],
+    (contacts, filters) => {
+        return contacts.filter(
+    (contact) => contact.name.toLowerCase().includes(filters .toLowerCase()))} )
